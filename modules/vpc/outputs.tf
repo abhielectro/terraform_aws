@@ -1,5 +1,5 @@
 output "vpc_id" {
-    value = aws_vpc.my_vpc
+    value = aws_vpc.my_vpc.id
     description = "The ID of the VPC"
 }
 output "vpc_cidr" {
