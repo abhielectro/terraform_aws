@@ -6,8 +6,15 @@ output "vpc_cidr" {
   value       = data.aws_vpc.main_vpc.cidr_block
   description = "The CIDR block of the VPC"
 }
-
 output "nat_gateway_eip" {
   description = "The public IP address of the NAT Gateway"
   value       = module.nat_gateway.nat_eip
+}
+output "cluster_name" {
+  description = "EKS cluster name"
+  value = module.eks.cluster_name
+}
+output "cluster_endpoint" {
+  description = "EKS cluster API endpoint"
+  value = module.eks.cluster_endpoint
 }
