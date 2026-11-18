@@ -33,4 +33,8 @@ variable "project_name" {
 }
 variable "farget_profile_name" {}
 variable "farget_namespace" {}
-  
+
+variable "s3_bucket_name" {
+  description = "S3 bucket name"
+  type        = string
+}
