@@ -1,3 +1,4 @@
+
 locals {
   common_tags = {
     Environment = var.env
@@ -5,6 +6,7 @@ locals {
     ManagedBy   = "Terraform"
   }
 }
+
 # EKS Cluster
 resource "aws_eks_cluster" "eks" {
   name     = var.cluster_name
@@ -17,7 +19,7 @@ resource "aws_eks_cluster" "eks" {
       var.private_subnet_ids
     )
   }
-  
+
   access_config {
     authentication_mode = "API_AND_CONFIG_MAP"
   }
@@ -25,26 +27,10 @@ resource "aws_eks_cluster" "eks" {
   depends_on = [
     aws_iam_role_policy_attachment.eks_cluster_policy
   ]
+
   tags = local.common_tags
 }
 
-# Managed Node Group
-resource "aws_eks_node_group" "node_group" {
-  cluster_name    = aws_eks_cluster.eks.name
-  node_group_name = var.node_group_name
-
-  node_role_arn = aws_iam_role.node_role.arn
-
-  subnet_ids = var.private_subnet_ids
-
-  instance_types = var.instance_types
-
-  scaling_config {
-    desired_size = var.desired_size
-    min_size     = var.min_size
-    max_size     = var.max_size
-  }
-}
 # CoreDNS Add-on
 resource "aws_eks_addon" "coredns" {
   cluster_name = aws_eks_cluster.eks.name
@@ -84,10 +70,36 @@ resource "aws_eks_addon" "kube_proxy" {
     aws_eks_cluster.eks
   ]
 }
+# Managed Node Group - Optional
+resource "aws_eks_node_group" "node_group" {
+  count = var.enable_managed_node_group ? 1 : 0
 
-# Fargate Profile
+  cluster_name    = aws_eks_cluster.eks.name
+  node_group_name = var.node_group_name
+  node_role_arn   = aws_iam_role.node_role.arn
+
+  subnet_ids     = var.private_subnet_ids
+  instance_types = var.instance_types
+
+  scaling_config {
+    desired_size = var.desired_size
+    min_size     = var.min_size
+    max_size     = var.max_size
+  }
+
+  tags = local.common_tags
+
+  depends_on = [
+    aws_iam_role_policy_attachment.worker_node_policy,
+    aws_iam_role_policy_attachment.cni_policy,
+    aws_iam_role_policy_attachment.ecr_policy
+  ]
+}
+
+# Fargate Profile - Optional
 resource "aws_eks_fargate_profile" "farprofile" {
   count = var.enable_fargate ? 1 : 0
+
   cluster_name           = aws_eks_cluster.eks.name
   fargate_profile_name   = var.fargate_profile_name
   pod_execution_role_arn = aws_iam_role.fargate_role.arn
@@ -97,4 +109,6 @@ resource "aws_eks_fargate_profile" "farprofile" {
   selector {
     namespace = var.fargate_namespace
   }
+
+  tags = local.common_tags
 }

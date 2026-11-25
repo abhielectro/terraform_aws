@@ -68,7 +68,9 @@ module "eks" {
   min_size     = var.min_size
   max_size     = var.max_size
 
-  enable_fargate       = true
+  enable_managed_node_group = true
+
+  enable_fargate       = false
   fargate_profile_name = var.farget_profile_name
   fargate_namespace    = var.farget_namespace
 }

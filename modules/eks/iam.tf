@@ -52,7 +52,7 @@ resource "aws_iam_role_policy_attachment" "cni_policy" {
 # Fargate Role
 resource "aws_iam_role_policy_attachment" "ecr_policy" {
   role       = aws_iam_role.node_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
 }
 
 resource "aws_iam_role" "fargate_role" {
