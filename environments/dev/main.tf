@@ -68,6 +68,8 @@ module "eks" {
   min_size     = var.min_size
   max_size     = var.max_size
 
+  enable_openid_connect_provider = true
+
   enable_managed_node_group = true
 
   enable_fargate       = false

@@ -31,6 +31,16 @@ resource "aws_eks_cluster" "eks" {
   tags = local.common_tags
 }
 
+# EKS OIDC Provider for IRSA
+resource "aws_iam_openid_connect_provider" "eks" {
+  count = var.enable_openid_connect_provider ? 1 : 0
+  url = aws_eks_cluster.eks.identity[0].oidc[0].issuer
+  client_id_list = [
+    "sts.amazonaws.com"
+  ]
+  tags = local.common_tags
+}
+
 # CoreDNS Add-on
 resource "aws_eks_addon" "coredns" {
   cluster_name = aws_eks_cluster.eks.name

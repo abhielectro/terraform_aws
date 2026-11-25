@@ -30,7 +30,11 @@ variable "min_size" {
 variable "max_size" {
     type = number
 }
-
+variable "enable_openid_connect_provider" {
+  description = "Enable or disable OPENIDC in cluster"
+  type = bool
+  default = false
+}
 variable "enable_managed_node_group" {
   description = "Whether to create an EKS Managed Node Group"
   type        = bool
